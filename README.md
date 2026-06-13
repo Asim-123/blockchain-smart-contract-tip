@@ -1,6 +1,6 @@
 # Tip Jar dApp
 
-Minimal end-to-end Tip Jar application — Part D of the Blockchain Full-Stack Developer assessment.
+Minimal end-to-end Tip Jar application
 
 ## Stack
 
