@@ -5,6 +5,8 @@ import {
   setLastProcessedBlock,
   insertTip,
   markTipsConfirmed,
+  getConfirmedTips,
+  type TipRecord,
 } from "./db";
 
 const RPC_URL = process.env.RPC_URL || "http://127.0.0.1:8545";
@@ -32,6 +34,12 @@ function getChain(): Chain {
 const chain = getChain();
 const client = createPublicClient({ chain, transport: http(RPC_URL) });
 
+let io: any = null;
+
+export function setSocketIO(socketIO: any): void {
+  io = socketIO;
+}
+
 export async function startIndexer(): Promise<void> {
   if (!CONTRACT_ADDRESS) {
     console.warn("CONTRACT_ADDRESS not set — indexer idle until configured");
@@ -57,12 +65,12 @@ export async function startIndexer(): Promise<void> {
 
 async function indexNewTips(): Promise<void> {
   const latest = await client.getBlockNumber();
-  let fromBlock = getLastProcessedBlock();
+  let fromBlock: bigint = BigInt(getLastProcessedBlock());
 
-  if (fromBlock === 0) {
+  if (fromBlock === 0n) {
     fromBlock = BigInt(DEPLOYMENT_BLOCK);
   } else {
-    fromBlock = BigInt(fromBlock + 1);
+    fromBlock = fromBlock + 1n;
   }
 
   if (fromBlock > latest) return;
@@ -81,7 +89,7 @@ async function indexNewTips(): Promise<void> {
   setLastProcessedBlock(Number(latest));
 }
 
-function processLog(log: Log<bigint, number, false, typeof newTipEvent, true>): void {
+function processLog(log: any): void {
   const { from, amount, message } = log.args;
   if (from === undefined || amount === undefined || message === undefined) return;
 
@@ -94,11 +102,35 @@ function processLog(log: Log<bigint, number, false, typeof newTipEvent, true>): 
     log_index: log.logIndex!,
     confirmed: 0,
   });
+
+  // Emit real-time event for new tip
+  if (io) {
+    io.emit("tip:new", {
+      from: from,
+      amount: amount.toString(),
+      message,
+      txHash: log.transactionHash!,
+      block: Number(log.blockNumber),
+    });
+  }
 }
 
 async function confirmTips(): Promise<void> {
   const latest = await client.getBlockNumber();
   const confirmedUpTo = Number(latest) - CONFIRMATIONS;
   if (confirmedUpTo < 0) return;
+  
   markTipsConfirmed(confirmedUpTo);
+  
+  // Emit real-time event for confirmed tips
+  if (io) {
+    const confirmedTips = getConfirmedTips();
+    io.emit("tips:confirmed", confirmedTips.map((t) => ({
+      from: t.from_address,
+      amount: t.amount,
+      message: t.message,
+      txHash: t.tx_hash,
+      block: t.block_number,
+    })));
+  }
 }

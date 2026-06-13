@@ -73,7 +73,7 @@ function TipJarApp() {
           <span className="tech-pill">viem</span>
         </div>
         <div className="footer-brand">
-          <span>Tip Jar dApp</span>
+          <span>Tip Jar dApp ✨</span>
         </div>
       </footer>
     </>

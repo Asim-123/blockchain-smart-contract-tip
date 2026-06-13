@@ -1,8 +1,10 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import { createServer } from "http";
+import { Server } from "socket.io";
 import { getConfirmedTips } from "./db";
-import { startIndexer } from "./indexer";
+import { startIndexer, setSocketIO } from "./indexer";
 import { relayTip, type RelayTipRequest } from "./relayer";
 
 const PORT = parseInt(process.env.PORT || "3001", 10);
@@ -10,6 +12,14 @@ const PORT = parseInt(process.env.PORT || "3001", 10);
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+const httpServer = createServer(app);
+export const io = new Server(httpServer, {
+  cors: {
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    methods: ["GET", "POST"],
+  },
+});
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
@@ -45,7 +55,17 @@ app.post("/relay-tip", async (req, res) => {
   }
 });
 
-app.listen(PORT, async () => {
+io.on("connection", (socket) => {
+  console.log("Client connected:", socket.id);
+  
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
+  });
+});
+
+httpServer.listen(PORT, async () => {
   console.log(`Backend listening on http://localhost:${PORT}`);
+  console.log(`WebSocket server ready`);
+  setSocketIO(io);
   await startIndexer();
 });

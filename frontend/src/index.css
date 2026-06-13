@@ -110,9 +110,10 @@ body::after {
 }
 
 @keyframes float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(20px, -15px) scale(1.04); }
-  66% { transform: translate(-15px, 10px) scale(0.97); }
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  25% { transform: translate(20px, -15px) scale(1.04) rotate(2deg); }
+  50% { transform: translate(-5px, 20px) scale(1.02) rotate(-1deg); }
+  75% { transform: translate(-15px, 10px) scale(0.97) rotate(1deg); }
 }
 
 #root {
@@ -151,6 +152,18 @@ body::after {
     inset 0 1px 0 rgba(255, 255, 255, 0.25);
   flex-shrink: 0;
   position: relative;
+  animation: brandFloat 4s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+.brand-icon:hover {
+  transform: scale(1.05) rotate(5deg);
+  animation-play-state: paused;
+}
+
+@keyframes brandFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
 }
 
 .brand-icon::after {
@@ -255,7 +268,7 @@ body::after {
   border-radius: var(--radius);
   padding: 1.15rem 1.3rem;
   backdrop-filter: blur(16px);
-  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
@@ -269,10 +282,24 @@ body::after {
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
 }
 
+.stat-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(245, 166, 35, 0.03), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
 .stat-card:hover {
   border-color: var(--border-strong);
-  transform: translateY(-2px);
+  transform: translateY(-4px) scale(1.02);
   box-shadow: var(--shadow-sm);
+}
+
+.stat-card:hover::after {
+  opacity: 1;
 }
 
 .stat-card-inner {
@@ -367,7 +394,27 @@ body::after {
   padding: 1.75rem;
   backdrop-filter: blur(20px);
   box-shadow: var(--shadow);
-  transition: border-color 0.25s;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: cardSlideIn 0.5s ease both;
+}
+
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.card:hover {
+  border-color: rgba(245, 166, 35, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 
+    var(--shadow),
+    0 0 40px rgba(245, 166, 35, 0.08);
 }
 
 .card::before {
@@ -599,15 +646,17 @@ textarea {
   color: var(--text);
   font-family: inherit;
   font-size: 0.95rem;
-  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
+  position: relative;
 }
 
 input:focus,
 textarea:focus {
   border-color: rgba(245, 166, 35, 0.45);
-  box-shadow: 0 0 0 3px var(--accent-soft);
+  box-shadow: 0 0 0 4px var(--accent-soft), 0 4px 12px rgba(0, 0, 0, 0.2);
   background: rgba(12, 16, 25, 0.95);
+  transform: scale(1.01);
 }
 
 input:disabled,
@@ -646,14 +695,31 @@ textarea {
   font-size: 0.76rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.18s;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.preset-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent-soft);
+  transform: scale(0);
+  transition: transform 0.3s ease;
+  border-radius: 999px;
+  z-index: -1;
 }
 
 .preset-btn:hover:not(:disabled) {
   border-color: rgba(245, 166, 35, 0.45);
   color: var(--accent-light);
-  background: var(--accent-soft);
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(245, 166, 35, 0.2);
+}
+
+.preset-btn:hover:not(:disabled)::before {
+  transform: scale(1);
 }
 
 .preset-btn.active {
@@ -661,6 +727,11 @@ textarea {
   color: var(--accent-light);
   background: var(--accent-soft);
   box-shadow: 0 0 16px rgba(245, 166, 35, 0.15);
+  transform: scale(1.05);
+}
+
+.preset-btn.active::before {
+  transform: scale(1);
 }
 
 .preset-btn:disabled {
@@ -684,7 +755,7 @@ textarea {
   font-weight: 700;
   letter-spacing: 0.01em;
   cursor: pointer;
-  transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow:
     0 4px 24px var(--accent-glow),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -699,17 +770,31 @@ textarea {
   inset: 0;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent 60%);
   pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent 50%);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.02);
   box-shadow:
-    0 8px 32px var(--accent-glow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    0 12px 40px var(--accent-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.btn-primary:hover:not(:disabled)::after {
+  transform: translateX(100%);
 }
 
 .btn-primary:active:not(:disabled) {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
 }
 
 .btn-primary:disabled {
@@ -843,8 +928,21 @@ textarea {
   border-radius: var(--radius-sm);
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  transition: border-color 0.22s, background 0.22s, transform 0.22s, box-shadow 0.22s;
-  animation: fadeIn 0.4s ease both;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: tipSlideIn 0.5s ease both;
+  position: relative;
+  overflow: hidden;
+}
+
+.tip-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  transition: width 0.3s ease;
 }
 
 .tip-item:nth-child(1) { animation-delay: 0.05s; }
@@ -854,15 +952,27 @@ textarea {
 .tip-item:nth-child(5) { animation-delay: 0.25s; }
 
 .tip-item:hover {
-  border-color: rgba(245, 166, 35, 0.2);
+  border-color: rgba(245, 166, 35, 0.3);
   background: var(--surface-hover);
-  transform: translateX(3px);
-  box-shadow: -3px 0 0 var(--accent);
+  transform: translateX(5px) scale(1.01);
+  box-shadow: 
+    -4px 0 0 var(--accent),
+    0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+.tip-item:hover::before {
+  width: 4px;
+}
+
+@keyframes tipSlideIn {
+  from { 
+    opacity: 0; 
+    transform: translateX(-20px) translateY(10px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0) translateY(0);
+  }
 }
 
 .tip-avatar {
@@ -879,6 +989,27 @@ textarea {
   flex-shrink: 0;
   letter-spacing: 0.03em;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tip-avatar::before {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: translateX(-100%) rotate(45deg);
+  transition: transform 0.6s ease;
+}
+
+.tip-item:hover .tip-avatar {
+  transform: rotate(5deg) scale(1.1);
+  box-shadow: 0 4px 12px rgba(245, 166, 35, 0.3);
+}
+
+.tip-item:hover .tip-avatar::before {
+  transform: translateX(100%) rotate(45deg);
 }
 
 .tip-body {
@@ -1047,4 +1178,304 @@ textarea {
   font-weight: 600 !important;
   border-radius: var(--radius-sm) !important;
   box-shadow: var(--shadow-sm) !important;
+  transition: all 0.3s ease !important;
+}
+
+[data-rk] button[data-testid="rk-connect-button"]:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Additional smooth animations */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(245, 166, 35, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(245, 166, 35, 0.6);
+  }
+}
+
+.stat-icon {
+  animation: scaleIn 0.4s ease both;
+}
+
+.stat-card:nth-child(1) .stat-icon { animation-delay: 0.1s; }
+.stat-card:nth-child(2) .stat-icon { animation-delay: 0.2s; }
+.stat-card:nth-child(3) .stat-icon { animation-delay: 0.3s; }
+
+.hero-badge {
+  animation: scaleIn 0.5s ease both;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced focus styles */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Loading state for status banner */
+.status.pending .status-icon {
+  animation: spin 1.5s linear infinite, pulse 2s ease-in-out infinite;
+}
+
+/* Ripple effect on button click */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Enhanced empty state animation */
+.empty-icon-wrap {
+  animation: float 6s ease-in-out infinite, glowPulse 3s ease-in-out infinite;
+}
+
+/* Smooth transitions for all interactive elements */
+a, button, input, textarea, select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Add shine effect to cards on hover */
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  transition: transform 0.6s ease;
+  pointer-events: none;
+}
+
+.card:hover::after {
+  animation: shine 1.5s ease;
+}
+
+/* Gradient text animation */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.brand-text h1 {
+  background-size: 200% auto;
+  animation: gradientShift 8s ease infinite;
+}
+
+/* Micro-interactions for status badges */
+.live-badge {
+  animation: scaleIn 0.4s ease 0.5s both;
+}
+
+.live-badge:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+}
+
+/* Amount badge pulse on hover */
+.tip-amount-badge {
+  transition: all 0.3s ease;
+}
+
+.tip-item:hover .tip-amount-badge {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(245, 166, 35, 0.3);
+}
+
+/* Success celebration animation */
+@keyframes celebrate {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.05) rotate(-5deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  75% {
+    transform: scale(1.05) rotate(-3deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.status.confirmed {
+  animation: fadeUp 0.3s ease both, celebrate 0.6s ease 0.3s both;
+}
+
+/* Enhanced toggle switch animation */
+.toggle-slider::before {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+  box-shadow: 0 3px 8px rgba(26, 16, 0, 0.3);
+}
+
+/* Card entrance animations with different delays */
+.main-grid > .card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.main-grid > .card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+/* Smooth color transitions */
+* {
+  transition-property: color, background-color, border-color, fill, stroke;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
+}
+
+/* Override for elements with specific transitions */
+.card, .btn-primary, .tip-item, .stat-card, .preset-btn, input, textarea {
+  transition-property: all;
+}
+
+/* Loading skeleton shimmer enhancement */
+@keyframes shimmerEnhanced {
+  0% {
+    background-position: 200% 0;
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    background-position: -200% 0;
+    opacity: 0.7;
+  }
+}
+
+.skeleton-item {
+  animation: shimmerEnhanced 2s ease infinite;
+}
+
+/* Hover effect for wallet hint */
+.wallet-hint {
+  transition: all 0.3s ease;
+}
+
+.wallet-hint:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(245, 166, 35, 0.2);
+  border-color: rgba(245, 166, 35, 0.4);
+}
+
+/* Message textarea character counter animation */
+.char-count {
+  transition: color 0.3s ease;
+}
+
+textarea:focus + .char-count {
+  color: var(--accent-light);
+}
+
+/* Footer tech pills hover effect */
+.tech-pill {
+  transition: all 0.2s ease;
+}
+
+.tech-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(245, 166, 35, 0.3);
+  color: var(--accent-light);
+  transform: translateY(-1px);
+}
+
+/* Gasless row hover effect enhancement */
+.gasless-row {
+  position: relative;
+  overflow: hidden;
+}
+
+.gasless-row::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(245, 166, 35, 0.05), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.gasless-row:hover::before {
+  transform: translateX(100%);
+}
+
+/* Stat value count-up animation */
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stat-value {
+  animation: countUp 0.5s ease both;
+}
+
+/* Responsive animations - reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

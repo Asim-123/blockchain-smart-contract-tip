@@ -1,20 +1,46 @@
-# Tip Jar dApp
+# Tip Jar dApp ⚡
 
-Send ETH tips with a message. Everything is stored on-chain and shown in a live feed.
+Send ETH tips with a message. Everything is stored on-chain and shown in a **real-time live feed** powered by WebSocket.
+
+## 🎥 Demo Video
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/5c94801136f849dfb8f79a1135537b32" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+
+> 📺 [Watch on Loom](https://www.loom.com/share/5c94801136f849dfb8f79a1135537b32) - See the Tip Jar dApp in action with real-time updates!
 
 **What’s in this repo**
 
 | Part | What it does |
 |------|----------------|
-| `contracts/` | Smart contract — receive tips, optional gasless signing |
-| `backend/` | Reads tips from the chain and serves them to the UI |
-| `frontend/` | Web app — connect wallet, send tips, see recent tips |
+| `contracts/` | Smart contract — receive tips, optional gasless signing (EIP-712) |
+| `backend/` | Blockchain indexer + WebSocket server for real-time updates |
+| `frontend/` | React app with instant tip updates via WebSocket |
+
+## 🚀 Currently Running
+
+The project is **live** right now:
+
+| Service | Status | URL |
+|---------|--------|-----|
+| 🔗 Blockchain | ✅ Running | http://127.0.0.1:8545 |
+| 🔧 Backend | ✅ Running | http://localhost:3001 |
+| 💻 Frontend | ✅ Running | **http://localhost:5175** |
+
+**Contract**: `0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
+
+### 🎯 Quick Links
+
+- 🎉 **[RUNNING_NOW.md](./RUNNING_NOW.md)** - **APP IS LIVE! Start here →**
+- 🚀 **[QUICKSTART.md](./QUICKSTART.md)** - Step-by-step usage guide (5 min)
+- 📊 **[PROJECT_STATUS.md](./PROJECT_STATUS.md)** - Current system status & metrics
+- ⚡ **[REALTIME_UPDATES.md](./REALTIME_UPDATES.md)** - WebSocket architecture details
+- 🧪 **[TEST_REALTIME.md](./TEST_REALTIME.md)** - Testing real-time features
 
 ---
 
-## Run it locally (5 steps)
+## 📋 Setup From Scratch (First Time)
 
-You need **Node.js 18+** and **3 terminal windows**.
+If you need to set up the project from the beginning, follow these steps. You need **Node.js 18+** and **3 terminal windows**.
 
 ### Step 1 — Install everything
 
@@ -121,9 +147,19 @@ Import this key in MetaMask to send test tips.
 1. Click **Connect Wallet**
 2. Enter an amount and message
 3. Click **Send Tip** and confirm in your wallet
-4. Your tip shows up in **Recent Tips**
+4. Your tip shows up in **Recent Tips** (real-time via WebSocket!)
 
 **Gasless mode (optional):** Turn on **Gasless tip** in the form. You only sign a message — the backend relayer pays gas. Works out of the box locally (relayer key is in `backend/.env.example`).
+
+### Real-Time Updates ⚡
+
+Tips appear instantly in the UI when confirmed on-chain:
+- WebSocket connection pushes updates immediately
+- No page refresh needed
+- Multiple browser tabs update simultaneously
+- Fallback polling ensures reliability
+
+See [REALTIME_UPDATES.md](./REALTIME_UPDATES.md) for technical details and [TEST_REALTIME.md](./TEST_REALTIME.md) for testing guide.
 
 ---
 
@@ -142,6 +178,8 @@ npm run deploy:sepolia
 
 ## API (backend)
 
+### REST Endpoints
+
 | Endpoint | Description |
 |----------|-------------|
 | `GET /health` | `{ "status": "ok" }` |
@@ -159,6 +197,15 @@ Example tip from `GET /tips`:
   "block": 3
 }
 ```
+
+### WebSocket Events
+
+| Event | Direction | Description |
+|-------|-----------|-------------|
+| `tip:new` | Server → Client | New tip indexed (may not be confirmed yet) |
+| `tips:confirmed` | Server → Client | Tips confirmed after required confirmations |
+| `connect` | Client ↔ Server | Socket connection established |
+| `disconnect` | Client ↔ Server | Socket connection closed |
 
 ---
 

@@ -12,6 +12,8 @@ export interface TipRow {
   confirmed: number;
 }
 
+export type TipRecord = TipRow;
+
 interface Store {
   lastProcessedBlock: number;
   tips: TipRow[];

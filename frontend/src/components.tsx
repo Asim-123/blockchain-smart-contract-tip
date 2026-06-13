@@ -15,6 +15,7 @@ import {
   EIP712_TIP_TYPES,
 } from "./config";
 import { activeChain } from "./wagmi";
+import { useSocket } from "./socket";
 
 type TxStatus = "idle" | "awaiting-signature" | "pending" | "confirmed" | "error";
 
@@ -336,9 +337,33 @@ export function TipList({ onStatsChange }: { onStatsChange?: (tips: Tip[]) => vo
     }
   }, [onStatsChange]);
 
+  // Handle real-time tip updates via WebSocket
+  const handleNewTip = useCallback((newTip: Tip) => {
+    console.log("New tip received:", newTip);
+    setTips((prevTips) => {
+      // Check if tip already exists
+      const exists = prevTips.some((t) => t.txHash === newTip.txHash);
+      if (exists) return prevTips;
+      
+      // Add new tip (unconfirmed tips won't be shown until confirmed)
+      // This is just for real-time feedback
+      return prevTips;
+    });
+  }, []);
+
+  const handleTipsConfirmed = useCallback((confirmedTips: Tip[]) => {
+    console.log("Tips confirmed:", confirmedTips.length);
+    setTips(confirmedTips);
+    onStatsChange?.(confirmedTips);
+  }, [onStatsChange]);
+
+  // Connect to WebSocket for real-time updates
+  useSocket(handleNewTip, handleTipsConfirmed);
+
   useEffect(() => {
     fetchTips();
-    const interval = setInterval(fetchTips, 5000);
+    // Keep polling as fallback, but with longer interval
+    const interval = setInterval(fetchTips, 30000);
     return () => clearInterval(interval);
   }, [fetchTips]);
 
