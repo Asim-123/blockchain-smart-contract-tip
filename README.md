@@ -18,16 +18,6 @@ Send ETH tips with a message. Everything is stored on-chain and shown in a **rea
 
 ## 🚀 Currently Running
 
-The project is **live** right now:
-
-| Service | Status |
-|---------|--------|
-| 🔗 Blockchain | ✅ Running |
-| 🔧 Backend | ✅ Running |
-| 💻 Frontend | ✅ Running |
-
-**Contract**: `0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
-
 ---
 
 ## 📋 Setup From Scratch (First Time)
