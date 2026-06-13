@@ -141,8 +141,6 @@ Tips appear instantly in the UI when confirmed on-chain:
 - Multiple browser tabs update simultaneously
 - Fallback polling ensures reliability
 
-See [REALTIME_UPDATES.md](./REALTIME_UPDATES.md) for technical details and [TEST_REALTIME.md](./TEST_REALTIME.md) for testing guide.
-
 ---
 
 ## Useful commands
