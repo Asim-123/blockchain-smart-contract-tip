@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: tip-jar-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: RPC_URL
+        sync: false
+      - key: CHAIN_ID
+        value: "11155111"
+      - key: CONTRACT_ADDRESS
+        sync: false
+      - key: DEPLOYMENT_BLOCK
+        sync: false
+      - key: CONFIRMATIONS
+        value: "3"
+      - key: PORT
+        value: "3001"
+      - key: POLL_INTERVAL_MS
+        value: "15000"

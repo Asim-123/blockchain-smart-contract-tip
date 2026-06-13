@@ -1,0 +1,10 @@
+node_modules/
+dist/
+deployments/
+data/
+.env
+cache/
+artifacts/
+typechain-types/
+coverage/
+*.log
